@@ -10,8 +10,8 @@ set(HDF5_VER "$ENV{HDF5_VER}")
 set(CTEST_SOURCE_DIRECTORY "${CTEST_SCRIPT_DIRECTORY}/lib/src/cgnslib-${VER}")
 set(CTEST_BINARY_DIRECTORY "${CTEST_SCRIPT_DIRECTORY}/lib/build/cgnslib-${VER}")
 
-set(HDF_INC "${CTEST_SCRIPT_DIRECTORY}/lib/install/hdf5-${HDF5_VER}/${CONF_DIR}/include")
 if (WIN32)
+  set(HDF_INC "${CTEST_SCRIPT_DIRECTORY}/lib/install/hdf5-${HDF5_VER}/${CONF_DIR}/include")
   if("${CONF_DIR}" STREQUAL "debug")
     set(HDF_LIB "${CTEST_SCRIPT_DIRECTORY}/lib/install/hdf5-${HDF5_VER}/${CONF_DIR}/lib/hdf5_D.lib")
   else()
@@ -27,9 +27,14 @@ if (WIN32)
       "int main(int argc, char *argv[]) { return 0; }\n"
     )
   endif()
+else()
+  # See
+  # https://cmake.org/cmake/help/v2.8.12/cmake.html#module:FindHDF5
+  find_package(HDF5)
+  set(HDF_LIB "${HDF5_C_LIBRARIES}")
 endif()
 
-set(CGNS_ENABLE_FORTRAN OFF)
+set(CGNS_ENABLE_FORTRAN ON)
 set(
   BUILD_OPTIONS 
   -DCMAKE_INSTALL_PREFIX:PATH=${CTEST_SCRIPT_DIRECTORY}/lib/install/cgnslib-${VER}/${CONF_DIR}
