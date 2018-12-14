@@ -16,9 +16,7 @@ rm -rf lib/build/cgnslib-$VER
 rm -rf lib/install/cgnslib-$VER
 
 mkdir -p lib/src/cgnslib-$VER
-cp -r appveyor.yml bin build-cgnslib.sh build-gcc-solver.sh \
-    CMakeLists.txt cmake_uninstall.cmake.in CTestConfig.cmake \
-    license.txt README.md release_docs src lib/src/cgnslib-$VER
+cp -r `git ls-files | sed 's/\/.*/\//' | sort | uniq` lib/src/cgnslib-$VER
 
 ctest -S build-cgnslib.cmake -DCONF_DIR:STRING=debug \
     "-DCTEST_CMAKE_GENERATOR:STRING=${GENERATOR}" -C Debug -VV \
