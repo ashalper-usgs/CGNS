@@ -78,21 +78,13 @@ ctest -S build-cgnslib.cmake -DCONF_DIR:STRING=release \
 
 %install
 rm -rf $RPM_BUILD_ROOT
-# no `install' target, so we have to simulate that
+# no conventional `install' target, so we have to simulate that
 mkdir -p $RPM_BUILD_ROOT%{_bindir} $RPM_BUILD_ROOT%{_includedir} $RPM_BUILD_ROOT%{_libdir}
-
-# TODO:
-#
-#   *** WARNING: identical binaries are copied, not linked:
-#          /usr/lib64/libcgns.so
-#     and  /usr/lib64/libcgns.so.3.2
 install lib/install/cgnslib-%{version}/release/bin/* $RPM_BUILD_ROOT%{_bindir}
 install lib/install/cgnslib-%{version}/release/include/*.h $RPM_BUILD_ROOT%{_includedir}
-install lib/install/cgnslib-%{version}/release/lib/*.so* $RPM_BUILD_ROOT%{_libdir}
-
-# TODO:
-# lib/install/cgnslib-3.2.1/release/include/cgnsBuild.defs
-# lib/install/cgnslib-3.2.1/release/include/cgnslib_f.h.orig
+install lib/install/cgnslib-%{version}/release/include/cgnsBuild.defs $RPM_BUILD_ROOT%{_includedir}
+install lib/install/cgnslib-%{version}/release/lib/*.so.* $RPM_BUILD_ROOT%{_libdir}
+(cd $RPM_BUILD_ROOT%{_libdir} && ln -s libcgns.so.3.2 libcgns.so)
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
 
