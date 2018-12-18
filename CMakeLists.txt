@@ -254,23 +254,29 @@ else (CGNS_ENABLE_HDF5 AND HDF5_NEED_MPI)
   mark_as_advanced(FORCE CGNS_ENABLE_PARALLEL)
 endif (CGNS_ENABLE_HDF5 AND HDF5_NEED_MPI)
 
-####################
-# RPATH Management #
-####################
+# if we're not building an RPM
+if (NOT CGNS_RPMBUILD)
+  ####################
+  # RPATH Management #
+  ####################
 
-# use, i.e. don't skip the full RPATH for the build tree
-set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+  # See
+  # https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
 
-# when building, don't use the install RPATH already
-# (but later on when installing)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+  # use, i.e. don't skip the full RPATH for the build tree
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
-# the RPATH to be used when installing
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  # when building, don't use the install RPATH now (but later on when
+  # installing)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  # the RPATH to be used when installing
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
+  # add the automatically determined parts of the RPATH, which points
+  # to directories outside the build tree, to the install RPATH
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif (NOT CGNS_RPMBUILD)
 
 ########
 # CGNS #
@@ -278,4 +284,3 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Include the src directory
 add_subdirectory(src)
-
