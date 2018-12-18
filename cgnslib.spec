@@ -52,16 +52,13 @@ rm -rf lib/src/cgnslib-$VER
 rm -rf lib/build/cgnslib-$VER
 rm -rf lib/install/cgnslib-$VER
 
+# CMake insists on building in a not-source directory
 mkdir -p lib/src/cgnslib-$VER
 cp -r build-cgnslib.cmake build-cgnslib.sh build-gcc-solver.sh \
     changelog CMakeLists.txt cmake_uninstall.cmake.in \
     create-dirExt-prop-solver.sh create-paths-pri-solver.sh \
     fortran_test/ install.lyx install.txt license.txt readme.lyx \
     readme.txt src/ versions.sh lib/src/cgnslib-$VER
-
-ctest -S build-cgnslib.cmake -DCONF_DIR:STRING=debug \
-    "-DCTEST_CMAKE_GENERATOR:STRING=${GENERATOR}" -C Debug -VV \
-    -O ${SGEN}-cgnslib-debug.log
 
 ctest -S build-cgnslib.cmake -DCONF_DIR:STRING=release \
     "-DCTEST_CMAKE_GENERATOR:STRING=${GENERATOR}" -C Release -VV \
