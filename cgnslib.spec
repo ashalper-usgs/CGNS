@@ -60,12 +60,18 @@ cp -r build-cgnslib.cmake build-cgnslib.sh build-gcc-solver.sh \
     fortran_test/ install.lyx install.txt license.txt readme.lyx \
     readme.txt src/ versions.sh lib/src/cgnslib-$VER
 
+# "-DCGNS_RPMBUILD:BOOL=ON"'s only purpose in life at the moment is to
+# disable RPATH fiddling in CMakeLists.txt. See also:
+#
+#   https://stackoverflow.com/questions/37683526/linking-runtime-library-for-test-with-cmake and
+#   https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
+#
 ctest -S build-cgnslib.cmake -DCONF_DIR:STRING=release \
-    "-DCTEST_CMAKE_GENERATOR:STRING=${GENERATOR}" -C Release -VV \
-    -O ${SGEN}-cgnslib-release.log
+    "-DCTEST_CMAKE_GENERATOR:STRING=${GENERATOR}" "-DCGNS_RPMBUILD:BOOL=ON" \
+    -C Release -VV -O ${SGEN}-cgnslib-release.log
 
-# See Fastmech-BMI/bin/build-gcc-solver.sh
-
+# See Fastmech-BMI/bin/build-gcc-solver.sh. Might not be necessary for
+# RPM build.
 ./create-paths-pri-solver.sh > paths.pri
 ./create-dirExt-prop-solver.sh > dirExt.prop
 
@@ -74,26 +80,15 @@ ctest -S build-cgnslib.cmake -DCONF_DIR:STRING=release \
 rm -rf $RPM_BUILD_ROOT
 # no `install' target, so we have to simulate that
 mkdir -p $RPM_BUILD_ROOT%{_bindir} $RPM_BUILD_ROOT%{_includedir} $RPM_BUILD_ROOT%{_libdir}
+
 # TODO:
-#install lib/install/cgnslib-%{version}/release/lib/*.so.* $RPM_BUILD_ROOT%{_libdir}
-#install lib/install/cgnslib-%{version}/release/lib/*.so $RPM_BUILD_ROOT%{_libdir}
+#
+#   *** WARNING: identical binaries are copied, not linked:
+#          /usr/lib64/libcgns.so
+#     and  /usr/lib64/libcgns.so.3.2
+install lib/install/cgnslib-%{version}/release/bin/* $RPM_BUILD_ROOT%{_bindir}
 install lib/install/cgnslib-%{version}/release/include/*.h $RPM_BUILD_ROOT%{_includedir}
-# TODO:
-#
-# ERROR   0002: file '/usr/bin/cgnsdiff' contains an invalid rpath '/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0004: file '/usr/bin/cgnsdiff' contains an insecure rpath '.' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0002: file '/usr/bin/cgnscompress' contains an invalid rpath '/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0004: file '/usr/bin/cgnscompress' contains an insecure rpath '.' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0002: file '/usr/bin/cgnslist' contains an invalid rpath '/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0004: file '/usr/bin/cgnslist' contains an insecure rpath '.' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0002: file '/usr/bin/cgnsnames' contains an invalid rpath '/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0004: file '/usr/bin/cgnsnames' contains an insecure rpath '.' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0002: file '/usr/bin/cgnsconvert' contains an invalid rpath '/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0004: file '/usr/bin/cgnsconvert' contains an insecure rpath '.' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0002: file '/usr/bin/cgnscheck' contains an invalid rpath '/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-# ERROR   0004: file '/usr/bin/cgnscheck' contains an insecure rpath '.' in [/root/rpmbuild/BUILD/CGNS/lib/install/cgnslib-3.2.1/release/lib:.]
-#
-#install lib/install/cgnslib-3.2.1/release/bin/* $RPM_BUILD_ROOT%{_bindir}
+install lib/install/cgnslib-%{version}/release/lib/*.so* $RPM_BUILD_ROOT%{_libdir}
 
 # TODO:
 # lib/install/cgnslib-3.2.1/release/include/cgnsBuild.defs
@@ -108,14 +103,15 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
 %files
 %doc
-#%{_libdir}/*.so.*
+%{_bindir}/*
+%{_libdir}/*.so.*
 
 %files devel
 %doc
 %{_includedir}/*
-#%{_libdir}/*.so
+%{_libdir}/*.so
 
 
 %changelog
-* Mon Dec 17 2018 Andrew Stephen Halper <ashalper@usgs.gov> - 3.2.1-3
+* Tue Dec 18 2018 Andrew Stephen Halper <ashalper@usgs.gov> - 3.2.1-3
 - Built on CentOS 7 for i-RIC.
