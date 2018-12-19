@@ -105,5 +105,5 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Tue Dec 18 2018 Andrew Stephen Halper <ashalper@usgs.gov> - 3.2.1-3
-- Built on CentOS 7 for i-RIC.
+* Wed Dec 19 2018 Andrew Stephen Halper <ashalper@usgs.gov> - 3.2.1-3
+- Built on CentOS 7.
