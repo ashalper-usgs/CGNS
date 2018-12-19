@@ -5,7 +5,7 @@ Summary:        Computational Fluid Dynamics General Notation System
 
 License:        zlib
 URL:            http://www.cgns.org/
-Source0:        https://github.com/ashalper-usgs/CGNS/archive/rpmbuild.zip
+Source0:        https://github.com/ashalper-usgs/CGNS/archive/iricdev.zip
 
 BuildRequires:  unzip, cmake, gcc-gfortran, hdf5-devel
 
@@ -27,7 +27,7 @@ developing applications that use %{name}.
 
 
 %prep
-%setup -q -n CGNS
+%setup -q -n CGNS-iricdev
 
 
 %build
@@ -39,11 +39,6 @@ SGEN="gcc"
 export GENERATOR SGEN
 
 # See iricdev/build-cgnslib.sh
-
-if [ -z "$GENERATOR" ]; then
-  echo "No Generator has been set"
-  exit 1
-fi
 
 . ./versions.sh
 VER=$CGNSLIB_VER
