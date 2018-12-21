@@ -100,5 +100,5 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Thu Dec 20 2018 Andrew Stephen Halper <ashalper@usgs.gov> - 3.2.1-3
+* Fri Dec 21 2018 Andrew Stephen Halper <ashalper@usgs.gov> - 3.2.1-3
 - Built on CentOS 7.
